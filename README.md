@@ -200,4 +200,8 @@ unzip pocketbase_0.21.1_linux_amd64.zip
 
 **Made by Kangkai**
 
+<<<<<<< HEAD
 本项目基于MIT许可证开源，欢迎贡献代码和反馈问题。
+=======
+本项目基于MIT许可证开源，欢迎贡献代码和反馈问题。
+>>>>>>> 63f488a4aaa140b341e7fcf0de752741d860a0c7
