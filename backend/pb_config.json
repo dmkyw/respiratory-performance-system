@@ -1,0 +1,72 @@
+{
+  "app": {
+    "name": "呼吸科绩效分配系统",
+    "url": "https://your-app.onrender.com",
+    "dataDir": "./pb_data",
+    "encryptionEnv": "PB_ENCRYPTION_KEY",
+    "hideStartBanner": false
+  },
+  "admin": {
+    "email": "admin@example.com",
+    "password": "admin123456"
+  },
+  "logs": {
+    "maxDays": 7,
+    "logIP": true,
+    "logAuthId": true
+  },
+  "smtp": {
+    "enabled": false,
+    "host": "",
+    "port": 587,
+    "username": "",
+    "password": "",
+    "authMethod": "PLAIN",
+    "tls": true,
+    "localName": "localhost"
+  },
+  "s3": {
+    "enabled": false,
+    "bucket": "",
+    "region": "",
+    "endpoint": "",
+    "accessKey": "",
+    "secret": "",
+    "forcePathStyle": false
+  },
+  "backups": {
+    "cron": "0 2 * * *",
+    "cronTimezone": "UTC",
+    "s3": {
+      "enabled": false,
+      "bucket": "",
+      "region": "",
+      "endpoint": "",
+      "accessKey": "",
+      "secret": "",
+      "forcePathStyle": false
+    }
+  },
+  "meta": {
+    "appName": "呼吸科临床治疗小组绩效分配系统",
+    "appUrl": "https://your-frontend.onrender.com",
+    "hideControls": false,
+    "senderName": "Support",
+    "senderAddress": "support@example.com",
+    "verificationTemplate": {
+      "body": "<p>Hello,</p>\n<p>Thank you for joining us at {APP_NAME}.</p>\n<p>Click on the button below to verify your email address.</p>\n<p>\n  <a class=\"btn\" href=\"{ACTION_URL}\" target=\"_blank\" rel=\"noopener\">Verify</a>\n</p>\n<p>\n  Thanks,<br/>\n  {APP_NAME} team\n</p>",
+      "subject": "Verify your {APP_NAME} email",
+      "actionUrl": "{APP_URL}/_/#/auth/confirm-verification/{TOKEN}"
+    },
+    "resetPasswordTemplate": {
+      "body": "<p>Hello,</p>\n<p>Click on the button below to reset your password.</p>\n<p>\n  <a class=\"btn\" href=\"{ACTION_URL}\" target=\"_blank\" rel=\"noopener\">Reset password</a>\n</p>\n<p><i>If you didn't ask to reset your password, you can ignore this email.</i></p>\n<p>\n  Thanks,<br/>\n  {APP_NAME} team\n</p>",
+      "subject": "Reset your {APP_NAME} password",
+      "actionUrl": "{APP_URL}/_/#/auth/confirm-password-reset/{TOKEN}"
+    },
+    "confirmEmailChangeTemplate": {
+      "body": "<p>Hello,</p>\n<p>Click on the button below to confirm your new email address.</p>\n<p>\n  <a class=\"btn\" href=\"{ACTION_URL}\" target=\"_blank\" rel=\"noopener\">Confirm new email</a>\n</p>\n<p><i>If you didn't ask to change your email address, you can ignore this email.</i></p>\n<p>\n  Thanks,<br/>\n  {APP_NAME} team\n</p>",
+      "subject": "Confirm your {APP_NAME} new email address",
+      "actionUrl": "{APP_URL}/_/#/auth/confirm-email-change/{TOKEN}"
+    }
+  }
+}

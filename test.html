@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JavaScript语法测试</title>
+</head>
+<body>
+    <h1>JavaScript语法测试</h1>
+    <div id="test-results"></div>
+    
+    <script>
+        console.log('开始测试JavaScript文件...');
+        const results = document.getElementById('test-results');
+        
+        function addResult(message, isError = false) {
+            const div = document.createElement('div');
+            div.style.color = isError ? 'red' : 'green';
+            div.textContent = message;
+            results.appendChild(div);
+        }
+        
+        // 测试每个JS文件
+        const scripts = [
+            '/js/models.js',
+            '/js/storage.js', 
+            '/js/calculator.js',
+            '/js/main.js'
+        ];
+        
+        let loadedCount = 0;
+        
+        scripts.forEach(src => {
+            const script = document.createElement('script');
+            script.src = src;
+            script.onload = () => {
+                addResult(`✓ ${src} 加载成功`);
+                loadedCount++;
+                if (loadedCount === scripts.length) {
+                    addResult('所有JavaScript文件加载完成！');
+                }
+            };
+            script.onerror = (error) => {
+                addResult(`✗ ${src} 加载失败: ${error.message}`, true);
+            };
+            document.head.appendChild(script);
+        });
+    </script>
+</body>
+</html>

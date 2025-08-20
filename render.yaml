@@ -1,0 +1,40 @@
+# Render平台部署配置文件
+# 用于部署呼吸科临床治疗小组绩效分配系统
+
+services:
+  # 前端静态网站服务
+  - type: web
+    name: performance-system-frontend
+    env: static
+    buildCommand: chmod +x build.sh && ./build.sh
+    staticPublishPath: ./dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    headers:
+      - path: /*
+        headers:
+          - key: X-Frame-Options
+            value: DENY
+          - key: X-Content-Type-Options
+            value: nosniff
+          - key: Referrer-Policy
+            value: strict-origin-when-cross-origin
+          - key: Cache-Control
+            value: public, max-age=31536000
+      - path: /*.html
+        headers:
+          - key: Cache-Control
+            value: public, max-age=0, must-revalidate
+      - path: /manifest.json
+        headers:
+          - key: Cache-Control
+            value: public, max-age=0, must-revalidate
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: POCKETBASE_URL
+        sync: false
+        # 需要在Render控制台中设置PocketBase后端服务的URL
+        # 格式: https://your-pocketbase-service.onrender.com

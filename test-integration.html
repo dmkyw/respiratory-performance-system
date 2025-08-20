@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PocketBase集成测试</title>
+    <link href="assets/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .test-result {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .test-pass {
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+        .test-fail {
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+        .test-pending {
+            background-color: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <h1>PocketBase集成测试</h1>
+        <p class="text-muted">测试绩效分配系统与PocketBase的集成功能</p>
+        
+        <div class="row">
+            <div class="col-md-6">
+                <h3>测试配置</h3>
+                <div class="mb-3">
+                    <label for="pocketbaseUrl" class="form-label">PocketBase URL</label>
+                    <input type="text" class="form-control" id="pocketbaseUrl" 
+                           value="http://localhost:8090" placeholder="输入PocketBase服务地址">
+                </div>
+                <button class="btn btn-primary" onclick="runTests()">开始测试</button>
+                <button class="btn btn-secondary" onclick="clearResults()">清除结果</button>
+            </div>
+            <div class="col-md-6">
+                <h3>测试进度</h3>
+                <div class="progress mb-3">
+                    <div class="progress-bar" id="progressBar" role="progressbar" style="width: 0%"></div>
+                </div>
+                <div id="currentTest" class="text-muted">等待开始测试...</div>
+            </div>
+        </div>
+        
+        <div class="mt-4">
+            <h3>测试结果</h3>
+            <div id="testResults"></div>
+        </div>
+    </div>
+
+    <!-- PocketBase SDK -->
+    <script src="https://unpkg.com/pocketbase@0.21.1/dist/pocketbase.umd.js"></script>
+    
+    <script>
+        let pb;
+        let testResults = [];
+        
+        const tests = [
+            { name: 'PocketBase SDK加载', func: testSDKLoading },
+            { name: 'PocketBase连接', func: testConnection },
+            { name: '医生集合访问', func: testDoctorsCollection },
+            { name: '工作数据集合访问', func: testWorkDataCollection },
+            { name: '绩效结果集合访问', func: testPerformanceResultsCollection },
+            { name: '创建测试医生', func: testCreateDoctor },
+            { name: '读取医生数据', func: testReadDoctor },
+            { name: '更新医生数据', func: testUpdateDoctor },
+            { name: '创建工作数据', func: testCreateWorkData },
+            { name: '删除测试数据', func: testCleanup }
+        ];
+        
+        async function runTests() {
+            const url = document.getElementById('pocketbaseUrl').value;
+            if (!url) {
+                alert('请输入PocketBase URL');
+                return;
+            }
+            
+            pb = new PocketBase(url);
+            testResults = [];
+            document.getElementById('testResults').innerHTML = '';
+            
+            for (let i = 0; i < tests.length; i++) {
+                const test = tests[i];
+                updateProgress(i, tests.length, test.name);
+                
+                try {
+                    await test.func();
+                    addTestResult(test.name, true, '测试通过');
+                } catch (error) {
+                    addTestResult(test.name, false, error.message);
+                }
+                
+                // 短暂延迟以便观察进度
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
+            
+            updateProgress(tests.length, tests.length, '测试完成');
+            showSummary();
+        }
+        
+        function updateProgress(current, total, testName) {
+            const percentage = (current / total) * 100;
+            document.getElementById('progressBar').style.width = percentage + '%';
+            document.getElementById('currentTest').textContent = testName;
+        }
+        
+        function addTestResult(testName, passed, message) {
+            testResults.push({ name: testName, passed, message });
+            
+            const resultDiv = document.createElement('div');
+            resultDiv.className = `test-result ${passed ? 'test-pass' : 'test-fail'}`;
+            resultDiv.innerHTML = `
+                <strong>${passed ? '✅' : '❌'} ${testName}</strong><br>
+                <small>${message}</small>
+            `;
+            
+            document.getElementById('testResults').appendChild(resultDiv);
+        }
+        
+        function showSummary() {
+            const passed = testResults.filter(r => r.passed).length;
+            const total = testResults.length;
+            
+            const summaryDiv = document.createElement('div');
+            summaryDiv.className = `test-result ${passed === total ? 'test-pass' : 'test-fail'}`;
+            summaryDiv.innerHTML = `
+                <strong>测试总结</strong><br>
+                通过: ${passed}/${total} 测试<br>
+                ${passed === total ? '🎉 所有测试通过！系统已准备好部署。' : '⚠️ 部分测试失败，请检查配置。'}
+            `;
+            
+            document.getElementById('testResults').appendChild(summaryDiv);
+        }
+        
+        function clearResults() {
+            document.getElementById('testResults').innerHTML = '';
+            document.getElementById('progressBar').style.width = '0%';
+            document.getElementById('currentTest').textContent = '等待开始测试...';
+            testResults = [];
+        }
+        
+        // 测试函数
+        async function testSDKLoading() {
+            if (typeof PocketBase === 'undefined') {
+                throw new Error('PocketBase SDK未加载');
+            }
+        }
+        
+        async function testConnection() {
+            try {
+                await pb.health.check();
+            } catch (error) {
+                throw new Error(`连接失败: ${error.message}`);
+            }
+        }
+        
+        async function testDoctorsCollection() {
+            try {
+                await pb.collection('doctors').getList(1, 1);
+            } catch (error) {
+                throw new Error(`医生集合访问失败: ${error.message}`);
+            }
+        }
+        
+        async function testWorkDataCollection() {
+            try {
+                await pb.collection('work_data').getList(1, 1);
+            } catch (error) {
+                throw new Error(`工作数据集合访问失败: ${error.message}`);
+            }
+        }
+        
+        async function testPerformanceResultsCollection() {
+            try {
+                await pb.collection('performance_results').getList(1, 1);
+            } catch (error) {
+                throw new Error(`绩效结果集合访问失败: ${error.message}`);
+            }
+        }
+        
+        let testDoctorId;
+        
+        async function testCreateDoctor() {
+            try {
+                const doctor = await pb.collection('doctors').create({
+                    name: '测试医生',
+                    title: '主治医师',
+                    title_coefficient: 1.2
+                });
+                testDoctorId = doctor.id;
+            } catch (error) {
+                throw new Error(`创建医生失败: ${error.message}`);
+            }
+        }
+        
+        async function testReadDoctor() {
+            try {
+                if (!testDoctorId) {
+                    throw new Error('没有测试医生ID');
+                }
+                await pb.collection('doctors').getOne(testDoctorId);
+            } catch (error) {
+                throw new Error(`读取医生数据失败: ${error.message}`);
+            }
+        }
+        
+        async function testUpdateDoctor() {
+            try {
+                if (!testDoctorId) {
+                    throw new Error('没有测试医生ID');
+                }
+                await pb.collection('doctors').update(testDoctorId, {
+                    title_coefficient: 1.3
+                });
+            } catch (error) {
+                throw new Error(`更新医生数据失败: ${error.message}`);
+            }
+        }
+        
+        let testWorkDataId;
+        
+        async function testCreateWorkData() {
+            try {
+                if (!testDoctorId) {
+                    throw new Error('没有测试医生ID');
+                }
+                const workData = await pb.collection('work_data').create({
+                    doctor_id: testDoctorId,
+                    month: '2024-01',
+                    attendance_days: 20,
+                    discharge_count: 15,
+                    bed_days: 300,
+                    reward_penalty: 0
+                });
+                testWorkDataId = workData.id;
+            } catch (error) {
+                throw new Error(`创建工作数据失败: ${error.message}`);
+            }
+        }
+        
+        async function testCleanup() {
+            try {
+                if (testWorkDataId) {
+                    await pb.collection('work_data').delete(testWorkDataId);
+                }
+                if (testDoctorId) {
+                    await pb.collection('doctors').delete(testDoctorId);
+                }
+            } catch (error) {
+                throw new Error(`清理测试数据失败: ${error.message}`);
+            }
+        }
+    </script>
+</body>
+</html>

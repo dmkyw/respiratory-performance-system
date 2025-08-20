@@ -1,0 +1,285 @@
+{
+  "collections": [
+    {
+      "id": "doctors",
+      "name": "doctors",
+      "type": "base",
+      "system": false,
+      "schema": [
+        {
+          "id": "name",
+          "name": "name",
+          "type": "text",
+          "required": true,
+          "unique": false,
+          "options": {
+            "min": 1,
+            "max": 100,
+            "pattern": ""
+          }
+        },
+        {
+          "id": "title",
+          "name": "title",
+          "type": "text",
+          "required": true,
+          "unique": false,
+          "options": {
+            "min": 1,
+            "max": 50,
+            "pattern": ""
+          }
+        },
+        {
+          "id": "title_coefficient",
+          "name": "title_coefficient",
+          "type": "number",
+          "required": true,
+          "unique": false,
+          "options": {
+            "min": 0.1,
+            "max": 10
+          }
+        },
+        {
+          "id": "work_years",
+          "name": "work_years",
+          "type": "number",
+          "required": true,
+          "unique": false,
+          "options": {
+            "min": 0,
+            "max": 50
+          }
+        },
+        {
+          "id": "is_certified",
+          "name": "is_certified",
+          "type": "bool",
+          "required": true,
+          "unique": false
+        }
+      ],
+      "indexes": [
+        "CREATE INDEX idx_doctors_name ON doctors (name)"
+      ],
+      "listRule": "",
+      "viewRule": "",
+      "createRule": "",
+      "updateRule": "",
+      "deleteRule": "",
+      "options": {}
+    },
+    {
+      "id": "monthly_work_data",
+      "name": "monthly_work_data",
+      "type": "base",
+      "system": false,
+      "schema": [
+        {
+          "id": "doctor_id",
+          "name": "doctor_id",
+          "type": "relation",
+          "required": true,
+          "unique": false,
+          "options": {
+            "collectionId": "doctors",
+            "cascadeDelete": true,
+            "minSelect": 1,
+            "maxSelect": 1,
+            "displayFields": ["name"]
+          }
+        },
+        {
+          "id": "year",
+          "name": "year",
+          "type": "number",
+          "required": true,
+          "unique": false,
+          "options": {
+            "min": 2020,
+            "max": 2050
+          }
+        },
+        {
+          "id": "month",
+          "name": "month",
+          "type": "number",
+          "required": true,
+          "unique": false,
+          "options": {
+            "min": 1,
+            "max": 12
+          }
+        },
+        {
+          "id": "attendance_days",
+          "name": "attendance_days",
+          "type": "number",
+          "required": true,
+          "unique": false,
+          "options": {
+            "min": 0,
+            "max": 31
+          }
+        },
+        {
+          "id": "discharge_count",
+          "name": "discharge_count",
+          "type": "number",
+          "required": true,
+          "unique": false,
+          "options": {
+            "min": 0,
+            "max": 1000
+          }
+        },
+        {
+          "id": "bed_days",
+          "name": "bed_days",
+          "type": "number",
+          "required": true,
+          "unique": false,
+          "options": {
+            "min": 0,
+            "max": 10000
+          }
+        },
+        {
+          "id": "medical_revenue",
+          "name": "medical_revenue",
+          "type": "number",
+          "required": true,
+          "unique": false,
+          "options": {
+            "min": 0,
+            "max": 10000000
+          }
+        },
+        {
+          "id": "reward_penalty",
+          "name": "reward_penalty",
+          "type": "number",
+          "required": false,
+          "unique": false,
+          "options": {
+            "min": -100000,
+            "max": 100000
+          }
+        }
+      ],
+      "indexes": [
+        "CREATE INDEX idx_monthly_work_data_doctor_id ON monthly_work_data (doctor_id)",
+        "CREATE INDEX idx_monthly_work_data_year_month ON monthly_work_data (year, month)",
+        "CREATE UNIQUE INDEX idx_monthly_work_data_unique ON monthly_work_data (doctor_id, year, month)"
+      ],
+      "listRule": "",
+      "viewRule": "",
+      "createRule": "",
+      "updateRule": "",
+      "deleteRule": "",
+      "options": {}
+    },
+    {
+      "id": "performance_records",
+      "name": "performance_records",
+      "type": "base",
+      "system": false,
+      "schema": [
+        {
+          "id": "year",
+          "name": "year",
+          "type": "number",
+          "required": true,
+          "unique": false,
+          "options": {
+            "min": 2020,
+            "max": 2050
+          }
+        },
+        {
+          "id": "month",
+          "name": "month",
+          "type": "number",
+          "required": true,
+          "unique": false,
+          "options": {
+            "min": 1,
+            "max": 12
+          }
+        },
+        {
+          "id": "total_bonus",
+          "name": "total_bonus",
+          "type": "number",
+          "required": true,
+          "unique": false,
+          "options": {
+            "min": 0,
+            "max": 10000000
+          }
+        },
+        {
+          "id": "calculation_config",
+          "name": "calculation_config",
+          "type": "json",
+          "required": false,
+          "unique": false
+        },
+        {
+          "id": "results",
+          "name": "results",
+          "type": "json",
+          "required": true,
+          "unique": false
+        }
+      ],
+      "indexes": [
+        "CREATE INDEX idx_performance_records_year_month ON performance_records (year, month)",
+        "CREATE UNIQUE INDEX idx_performance_records_unique ON performance_records (year, month)"
+      ],
+      "listRule": "",
+      "viewRule": "",
+      "createRule": "",
+      "updateRule": "",
+      "deleteRule": "",
+      "options": {}
+    },
+    {
+      "id": "system_config",
+      "name": "system_config",
+      "type": "base",
+      "system": false,
+      "schema": [
+        {
+          "id": "config_key",
+          "name": "config_key",
+          "type": "text",
+          "required": true,
+          "unique": true,
+          "options": {
+            "min": 1,
+            "max": 100,
+            "pattern": ""
+          }
+        },
+        {
+          "id": "config_data",
+          "name": "config_data",
+          "type": "json",
+          "required": true,
+          "unique": false
+        }
+      ],
+      "indexes": [
+        "CREATE UNIQUE INDEX idx_system_config_key ON system_config (config_key)"
+      ],
+      "listRule": "",
+      "viewRule": "",
+      "createRule": "",
+      "updateRule": "",
+      "deleteRule": "",
+      "options": {}
+    }
+  ]
+}

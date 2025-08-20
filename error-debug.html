@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>错误调试页面</title>
+    <link href="assets/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-4">
+        <h1>错误调试页面</h1>
+        <div id="errorLog" class="alert alert-info">
+            <h5>错误日志：</h5>
+            <div id="errorContent">等待错误信息...</div>
+        </div>
+        <div id="scriptStatus" class="alert alert-secondary">
+            <h5>脚本加载状态：</h5>
+            <div id="statusContent">正在加载...</div>
+        </div>
+    </div>
+
+    <script>
+        // 全局错误捕获
+        window.onerror = function(message, source, lineno, colno, error) {
+            const errorContent = document.getElementById('errorContent');
+            const errorInfo = `
+                <div class="border-bottom pb-2 mb-2">
+                    <strong>错误信息:</strong> ${message}<br>
+                    <strong>文件:</strong> ${source}<br>
+                    <strong>行号:</strong> ${lineno}<br>
+                    <strong>列号:</strong> ${colno}<br>
+                    <strong>错误对象:</strong> ${error ? error.stack : 'N/A'}
+                </div>
+            `;
+            errorContent.innerHTML += errorInfo;
+            console.error('Global error caught:', { message, source, lineno, colno, error });
+            return true;
+        };
+
+        // 捕获未处理的Promise拒绝
+        window.addEventListener('unhandledrejection', function(event) {
+            const errorContent = document.getElementById('errorContent');
+            const errorInfo = `
+                <div class="border-bottom pb-2 mb-2">
+                    <strong>Promise拒绝:</strong> ${event.reason}<br>
+                    <strong>类型:</strong> unhandledrejection
+                </div>
+            `;
+            errorContent.innerHTML += errorInfo;
+            console.error('Unhandled promise rejection:', event.reason);
+        });
+
+        function updateStatus(message) {
+            const statusContent = document.getElementById('statusContent');
+            statusContent.innerHTML += `<div>${new Date().toLocaleTimeString()}: ${message}</div>`;
+        }
+
+        updateStatus('开始加载脚本...');
+    </script>
+
+    <!-- 引入JavaScript库 -->
+    <script src="assets/bootstrap.bundle.min.js" onload="updateStatus('Bootstrap加载成功')" onerror="updateStatus('Bootstrap加载失败')"></script>
+    <script src="js/models.js" onload="updateStatus('models.js加载成功')" onerror="updateStatus('models.js加载失败')"></script>
+    <script src="js/storage.js" onload="updateStatus('storage.js加载成功')" onerror="updateStatus('storage.js加载失败')"></script>
+    <script src="js/calculator.js" onload="updateStatus('calculator.js加载成功')" onerror="updateStatus('calculator.js加载失败')"></script>
+    <script src="js/main.js" onload="updateStatus('main.js加载成功')" onerror="updateStatus('main.js加载失败')"></script>
+
+    <script>
+        // 页面加载完成后的检查
+        window.addEventListener('load', function() {
+            updateStatus('页面加载完成');
+            
+            // 检查关键对象是否存在
+            setTimeout(function() {
+                updateStatus('开始检查对象...');
+                
+                if (typeof Doctor !== 'undefined') {
+                    updateStatus('✓ Doctor类已定义');
+                } else {
+                    updateStatus('✗ Doctor类未定义');
+                }
+                
+                if (typeof StorageManager !== 'undefined') {
+                    updateStatus('✓ StorageManager类已定义');
+                } else {
+                    updateStatus('✗ StorageManager类未定义');
+                }
+                
+                if (typeof PerformanceCalculator !== 'undefined') {
+                    updateStatus('✓ PerformanceCalculator类已定义');
+                } else {
+                    updateStatus('✗ PerformanceCalculator类未定义');
+                }
+                
+                if (typeof MainPageController !== 'undefined') {
+                    updateStatus('✓ MainPageController类已定义');
+                } else {
+                    updateStatus('✗ MainPageController类未定义');
+                }
+                
+                updateStatus('对象检查完成');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

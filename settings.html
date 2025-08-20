@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>呼吸科临床治疗小组绩效分配系统 - 系统设置</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-calculator me-2"></i>
+                呼吸科临床治疗小组绩效分配系统
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="index.html">数据录入</a>
+                <a class="nav-link" href="results.html">结果展示</a>
+                <a class="nav-link" href="history.html">历史查询</a>
+                <a class="nav-link active" href="settings.html">系统设置</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- 页面标题 -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h2 class="text-primary">
+                    <i class="fas fa-cogs me-2"></i>
+                    系统设置
+                </h2>
+                <p class="text-muted">配置绩效计算参数和系统选项</p>
+            </div>
+        </div>
+
+        <!-- 绩效计算配置 -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-calculator me-2"></i>
+                    绩效计算配置
+                </h5>
+            </div>
+            <div class="card-body">
+                <form id="performanceConfigForm">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="baseSalaryWeight" class="form-label">
+                                基础工资权重 (%)
+                                <i class="fas fa-info-circle text-muted" data-bs-toggle="tooltip" title="基础工资在绩效计算中的占比"></i>
+                            </label>
+                            <input type="number" class="form-control" id="baseSalaryWeight" min="0" max="100" step="1" value="50">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="dischargeWeight" class="form-label">
+                                出院人数权重 (%)
+                                <i class="fas fa-info-circle text-muted" data-bs-toggle="tooltip" title="出院人数在绩效计算中的占比"></i>
+                            </label>
+                            <input type="number" class="form-control" id="dischargeWeight" min="0" max="100" step="1" value="15">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="bedDaysWeight" class="form-label">
+                                床日数权重 (%)
+                                <i class="fas fa-info-circle text-muted" data-bs-toggle="tooltip" title="床日数在绩效计算中的占比"></i>
+                            </label>
+                            <input type="number" class="form-control" id="bedDaysWeight" min="0" max="100" step="1" value="25">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="attendanceWeight" class="form-label">
+                                出勤权重 (%)
+                                <i class="fas fa-info-circle text-muted" data-bs-toggle="tooltip" title="出勤天数在绩效计算中的占比"></i>
+                            </label>
+                            <input type="number" class="form-control" id="attendanceWeight" min="0" max="100" step="1" value="10">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                权重总和：<span id="totalWeight" class="fw-bold">100</span>%
+                                <span id="weightWarning" class="text-danger ms-2" style="display: none;">权重总和应为100%</span>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 职称系数配置 -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-user-tie me-2"></i>
+                    职称系数配置
+                </h5>
+                <button class="btn btn-outline-primary btn-sm" id="addTitleBtn">
+                    <i class="fas fa-plus me-1"></i>
+                    添加职称
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped" id="titleCoeffTable">
+                        <thead class="table-light">
+                            <tr>
+                                <th>职称名称</th>
+                                <th>系数值</th>
+                                <th>说明</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="titleCoeffTableBody">
+                            <!-- 职称系数数据将通过JavaScript动态添加 -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 新入职人员系数配置 -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-user-plus me-2"></i>
+                    新入职人员系数配置
+                </h5>
+            </div>
+            <div class="card-body">
+                <form id="newEmployeeConfigForm">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="uncertifiedCoeff" class="form-label">
+                                未取证系数
+                                <i class="fas fa-info-circle text-muted" data-bs-toggle="tooltip" title="未取得执业证书的新入职人员系数"></i>
+                            </label>
+                            <input type="number" class="form-control" id="uncertifiedCoeff" min="0" max="2" step="0.1" value="0.6">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="certifiedWithinThreeYearsCoeff" class="form-label">
+                                取证三年内系数
+                                <i class="fas fa-info-circle text-muted" data-bs-toggle="tooltip" title="取得执业证书三年内的新入职人员系数"></i>
+                            </label>
+                            <input type="number" class="form-control" id="certifiedWithinThreeYearsCoeff" min="0" max="2" step="0.1" value="0.8">
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="normalCoeff" class="form-label">
+                                正常系数
+                                <i class="fas fa-info-circle text-muted" data-bs-toggle="tooltip" title="取证三年以上或非新入职人员的正常系数"></i>
+                            </label>
+                            <input type="number" class="form-control" id="normalCoeff" min="0" max="2" step="0.1" value="1.0" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="newEmployeeThreshold" class="form-label">
+                                新入职判定年限 (年)
+                                <i class="fas fa-info-circle text-muted" data-bs-toggle="tooltip" title="判定为新入职人员的工作年限阈值"></i>
+                            </label>
+                            <input type="number" class="form-control" id="newEmployeeThreshold" min="1" max="10" step="1" value="3">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 系统选项配置 -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-sliders-h me-2"></i>
+                    系统选项配置
+                </h5>
+            </div>
+            <div class="card-body">
+                <form id="systemOptionsForm">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="autoSaveSwitch" checked>
+                                <label class="form-check-label" for="autoSaveSwitch">
+                                    自动保存数据
+                                    <small class="text-muted d-block">在数据录入时自动保存到本地存储</small>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="confirmDeleteSwitch" checked>
+                                <label class="form-check-label" for="confirmDeleteSwitch">
+                                    删除确认
+                                    <small class="text-muted d-block">删除数据前显示确认对话框</small>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="decimalPlaces" class="form-label">
+                                小数位数
+                                <i class="fas fa-info-circle text-muted" data-bs-toggle="tooltip" title="绩效分数显示的小数位数"></i>
+                            </label>
+                            <select class="form-select" id="decimalPlaces">
+                                <option value="0">0位小数</option>
+                                <option value="1">1位小数</option>
+                                <option value="2" selected>2位小数</option>
+                                <option value="3">3位小数</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="maxHistoryRecords" class="form-label">
+                                最大历史记录数
+                                <i class="fas fa-info-circle text-muted" data-bs-toggle="tooltip" title="系统保留的最大历史记录数量"></i>
+                            </label>
+                            <input type="number" class="form-control" id="maxHistoryRecords" min="10" max="1000" step="10" value="100">
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- 计算逻辑说明 -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle me-2"></i>
+                    计算逻辑说明
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12">
+                        <h6 class="text-primary mb-3">绩效分配计算方法</h6>
+                        <div class="mb-4">
+                            <h6 class="text-secondary">1. 基础分数计算</h6>
+                            <ul class="list-unstyled ms-3">
+                                <li><i class="fas fa-check text-success me-2"></i>医疗业务总额权重：50%</li>
+                                <li><i class="fas fa-check text-success me-2"></i>床日数权重：25%</li>
+                                <li><i class="fas fa-check text-success me-2"></i>出院人数权重：15%</li>
+                                <li><i class="fas fa-check text-success me-2"></i>出勤权重：10%</li>
+                            </ul>
+                        </div>
+                        <div class="mb-4">
+                            <h6 class="text-secondary">2. 各项分数计算方法</h6>
+                            <ul class="list-unstyled ms-3">
+                                <li><i class="fas fa-formula me-2 text-info"></i>医疗业务总额分数 = (个人医疗业务总额 / 团队医疗业务总额) × 100</li>
+                                <li><i class="fas fa-formula me-2 text-info"></i>床日数分数 = (个人床日数 / 团队床日数) × 100</li>
+                                <li><i class="fas fa-formula me-2 text-info"></i>出院人数分数 = (个人出院人数 / 团队出院人数) × 100</li>
+                                <li><i class="fas fa-formula me-2 text-info"></i>出勤分数 = (个人出勤天数 / 团队出勤天数) × 100</li>
+                            </ul>
+                        </div>
+                        <div class="mb-4">
+                            <h6 class="text-secondary">3. 加权总分计算</h6>
+                            <p class="ms-3 mb-2"><i class="fas fa-calculator me-2 text-warning"></i>加权总分 = 医疗业务总额分数 × 50% + 床日数分数 × 25% + 出院人数分数 × 15% + 出勤分数 × 10%</p>
+                        </div>
+                        <div class="mb-4">
+                            <h6 class="text-secondary">4. 系数调整</h6>
+                            <ul class="list-unstyled ms-3">
+                                <li><i class="fas fa-user-tie me-2 text-primary"></i>职称系数：根据医生职称等级应用相应系数
+                                    <ul class="list-unstyled ms-4 mt-2">
+                                        <li><i class="fas fa-circle me-2 text-muted" style="font-size: 0.5em;"></i>住院医师 1.0</li>
+                                        <li><i class="fas fa-circle me-2 text-muted" style="font-size: 0.5em;"></i>主治医师 1.2</li>
+                                        <li><i class="fas fa-circle me-2 text-muted" style="font-size: 0.5em;"></i>副主任医师 1.5</li>
+                                        <li><i class="fas fa-circle me-2 text-muted" style="font-size: 0.5em;"></i>主任医师 1.8</li>
+                                    </ul>
+                                </li>
+                                <li><i class="fas fa-user-plus me-2 text-success"></i>新入职人员系数：未取证0.6，取证三年内0.8，含渐进式调整</li>
+                            </ul>
+                        </div>
+                        <div class="mb-4">
+                            <h6 class="text-secondary">5. 分配比例和金额计算</h6>
+                            <ul class="list-unstyled ms-3">
+                                <li><i class="fas fa-percentage me-2 text-info"></i>分配比例 = 个人最终分配金额 / 总奖金额度</li>
+                                <li><i class="fas fa-coins me-2 text-warning"></i>分配金额 = 总奖金额度 × 分配比例</li>
+                            </ul>
+                        </div>
+                        <div class="alert alert-info">
+                            <h6 class="text-secondary mb-2">6. 整数化处理和差额调整</h6>
+                            <ul class="list-unstyled ms-3 mb-0">
+                                <li><i class="fas fa-calculator me-2 text-primary"></i>所有分配金额四舍五入为整数</li>
+                                <li><i class="fas fa-balance-scale me-2 text-success"></i>如果总分配与目标金额差额在10元内，<strong>优先调整分配金额较小的医生</strong></li>
+                                <li><i class="fas fa-equals me-2 text-warning"></i>通过±1元的方式确保总分配与目标金额差额为0</li>
+                                <li><i class="fas fa-shield-alt me-2 text-info"></i>确保分配公平性，避免对个别医生造成过大影响</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 数据管理 -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-database me-2"></i>
+                    数据管理
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-primary">数据导入导出</h6>
+                        <div class="mb-3">
+                            <label for="importFile" class="form-label">导入配置文件</label>
+                            <input type="file" class="form-control" id="importFile" accept=".json">
+                            <small class="text-muted">支持JSON格式的配置文件</small>
+                        </div>
+                        <div class="mb-3">
+                            <button class="btn btn-outline-primary" id="importConfigBtn">
+                                <i class="fas fa-upload me-1"></i>
+                                导入配置
+                            </button>
+                            <button class="btn btn-outline-success" id="exportConfigBtn">
+                                <i class="fas fa-download me-1"></i>
+                                导出配置
+                            </button>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-primary">数据清理</h6>
+                        <div class="mb-3">
+                            <p class="text-muted">清理系统数据，请谨慎操作</p>
+                        </div>
+                        <div class="mb-3">
+                            <button class="btn btn-outline-warning" id="clearHistoryBtn">
+                                <i class="fas fa-trash me-1"></i>
+                                清空历史记录
+                            </button>
+                            <button class="btn btn-outline-danger" id="resetSystemBtn">
+                                <i class="fas fa-undo me-1"></i>
+                                重置系统
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 操作按钮 -->
+        <div class="row mb-4">
+            <div class="col-12 text-center">
+                <button class="btn btn-primary btn-lg" id="saveSettingsBtn">
+                    <i class="fas fa-save me-2"></i>
+                    保存设置
+                </button>
+                <button class="btn btn-outline-secondary btn-lg ms-2" id="resetSettingsBtn">
+                    <i class="fas fa-undo me-2"></i>
+                    重置为默认
+                </button>
+                <a href="index.html" class="btn btn-outline-primary btn-lg ms-2">
+                    <i class="fas fa-arrow-left me-2"></i>
+                    返回主页
+                </a>
+            </div>
+        </div>
+
+        <!-- 消息提示区域 -->
+        <div id="messageArea"></div>
+    </div>
+
+    <!-- 添加/编辑职称模态框 -->
+    <div class="modal fade" id="titleModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="titleModalTitle">添加职称</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="titleForm">
+                        <div class="mb-3">
+                            <label for="titleName" class="form-label">职称名称</label>
+                            <input type="text" class="form-control" id="titleName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="titleCoeff" class="form-label">系数值</label>
+                            <input type="number" class="form-control" id="titleCoeff" min="0" max="5" step="0.1" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="titleDescription" class="form-label">说明</label>
+                            <textarea class="form-control" id="titleDescription" rows="2"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="saveTitleBtn">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 确认对话框 -->
+    <div class="modal fade" id="confirmModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmModalTitle">确认操作</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p id="confirmModalMessage">确定要执行此操作吗？</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-danger" id="confirmActionBtn">确定</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Made by 标识 -->
+    <div class="made-by-signature">
+        Made by Kangkai
+    </div>
+
+    <!-- 引入JavaScript库 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="js/models.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/calculator.js"></script>
+    <script src="js/settings.js"></script>
+</body>
+</html>

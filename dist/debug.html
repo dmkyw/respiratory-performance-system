@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>调试页面</title>
+</head>
+<body>
+    <h1>JavaScript调试页面</h1>
+    <div id="output"></div>
+    
+    <script>
+        console.log('开始调试JavaScript文件...');
+        
+        function addOutput(message, isError = false) {
+            const output = document.getElementById('output');
+            const div = document.createElement('div');
+            div.style.color = isError ? 'red' : 'green';
+            div.style.margin = '5px 0';
+            div.textContent = message;
+            output.appendChild(div);
+        }
+        
+        // 逐个测试JavaScript文件
+        const scripts = [
+            'js/models.js',
+            'js/storage.js', 
+            'js/calculator.js',
+            'js/main.js'
+        ];
+        
+        let currentIndex = 0;
+        
+        function loadNextScript() {
+            if (currentIndex >= scripts.length) {
+                addOutput('所有脚本加载完成！');
+                return;
+            }
+            
+            const script = document.createElement('script');
+            script.src = scripts[currentIndex];
+            
+            script.onload = function() {
+                addOutput(`✓ ${scripts[currentIndex]} 加载成功`);
+                currentIndex++;
+                setTimeout(loadNextScript, 100); // 延迟加载下一个
+            };
+            
+            script.onerror = function(error) {
+                addOutput(`✗ ${scripts[currentIndex]} 加载失败`, true);
+                console.error('Script error:', error);
+                currentIndex++;
+                setTimeout(loadNextScript, 100);
+            };
+            
+            document.head.appendChild(script);
+        }
+        
+        // 开始加载
+        loadNextScript();
+    </script>
+</body>
+</html>

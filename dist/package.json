@@ -1,0 +1,35 @@
+{
+  "name": "respiratory-performance-system",
+  "version": "1.0.0",
+  "description": "呼吸科临床治疗小组绩效分配系统",
+  "main": "index.html",
+  "scripts": {
+    "build": "build.bat",
+    "start": "python -m http.server 8080",
+    "dev": "python -m http.server 8080",
+    "serve": "python -m http.server 8080"
+  },
+  "keywords": [
+    "healthcare",
+    "performance",
+    "management",
+    "respiratory",
+    "pocketbase"
+  ],
+  "author": "Kangkai",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/respiratory-performance-system.git"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+}

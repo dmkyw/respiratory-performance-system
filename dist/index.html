@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>呼吸科临床治疗小组绩效分配系统 - 数据录入</title>
+    
+    <!-- PWA Meta Tags -->
+    <meta name="description" content="呼吸科临床治疗小组绩效分配管理系统">
+    <meta name="theme-color" content="#007bff">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="绩效分配系统">
+    <meta name="msapplication-TileColor" content="#007bff">
+    <meta name="msapplication-config" content="./browserconfig.xml">
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="./manifest.json">
+    
+    <!-- Apple Touch Icons -->
+    <link rel="apple-touch-icon" sizes="72x72" href="./icons/icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="96x96" href="./icons/icon-96x96.png">
+    <link rel="apple-touch-icon" sizes="128x128" href="./icons/icon-128x128.png">
+    <link rel="apple-touch-icon" sizes="144x144" href="./icons/icon-144x144.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="./icons/icon-152x152.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="./icons/icon-192x192.png">
+    <link rel="apple-touch-icon" sizes="384x384" href="./icons/icon-384x384.png">
+    <link rel="apple-touch-icon" sizes="512x512" href="./icons/icon-512x512.png">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="./icons/icon-128x128.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="./icons/icon-72x72.png">
+    
+    <link href="assets/bootstrap.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/pwa-install.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-calculator me-2"></i>
+                呼吸科临床治疗小组绩效分配系统
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link active" href="index.html">数据录入</a>
+                <a class="nav-link" href="results.html">结果展示</a>
+                <a class="nav-link" href="history.html">历史查询</a>
+                <a class="nav-link" href="settings.html">系统设置</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- 页面标题 -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h2 class="text-primary">
+                    <i class="fas fa-edit me-2"></i>
+                    绩效数据录入
+                </h2>
+                <p class="text-muted">请录入医生基本信息和月度工作数据，系统将自动计算绩效分配结果</p>
+            </div>
+        </div>
+
+        <!-- 月份选择 -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">选择计算月份</h5>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="fas fa-calendar"></i>
+                            </span>
+                            <input type="month" class="form-control" id="currentMonth" name="currentMonth" required>
+                            <button class="btn btn-primary" type="button" id="setMonthBtn">
+                                确定月份
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">总奖金数额</h5>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="fas fa-yen-sign"></i>
+                            </span>
+                            <input type="number" class="form-control" id="totalBonus" name="totalBonus" placeholder="请输入总奖金数额" min="0" step="0.01">
+                            <span class="input-group-text">元</span>
+                        </div>
+                        <small class="text-muted mt-1 d-block">所有医生分配金额汇总应等于此金额</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 医生信息与工作数据管理 -->
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="fas fa-users me-2"></i>
+                    医生信息与工作数据管理
+                </h5>
+                <button class="btn btn-success btn-sm" id="addDoctorBtn">
+                    <i class="fas fa-plus me-1"></i>
+                    添加医生
+                </button>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover" id="combinedTable">
+                        <thead class="table-primary">
+                            <tr>
+                                <th>姓名</th>
+                                <th>出勤天数</th>
+                                <th class="col-discharge-narrow">出院人数</th>
+                                <th class="col-beddays-wide">床日数</th>
+                                <th style="width: 150px;">奖罚</th>
+                                <th style="width: 80px;">编辑</th>
+                            </tr>
+                        </thead>
+                        <tbody id="combinedTableBody">
+                            <!-- 医生信息和工作数据将通过JavaScript动态添加 -->
+                        </tbody>
+                    </table>
+                </div>
+                <!-- 数据完整性检查面板 -->
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <div class="card border-info">
+                            <div class="card-header bg-info text-white">
+                                <h6 class="mb-0">
+                                    <i class="fas fa-check-circle me-2"></i>
+                                    数据完整性检查
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-users text-muted me-2"></i>
+                                            <span class="small">医生信息：</span>
+                                            <span class="badge ms-2" id="doctorCountBadge">0</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-calendar text-muted me-2"></i>
+                                            <span class="small">选择月份：</span>
+                                            <span class="badge ms-2" id="monthStatusBadge">未设置</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-yen-sign text-muted me-2"></i>
+                                            <span class="small">总奖金：</span>
+                                            <span class="badge ms-2" id="bonusStatusBadge">未设置</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-database text-muted me-2"></i>
+                                            <span class="small">工作数据：</span>
+                                            <span class="badge ms-2" id="workDataStatusBadge">未录入</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-12">
+                                        <div class="alert alert-warning alert-sm mb-0" id="dataValidationAlert" style="display: none;">
+                                            <i class="fas fa-exclamation-triangle me-2"></i>
+                                            <span id="validationMessage">请完善数据录入后再进行计算</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 数据预览面板 -->
+                <div class="row mt-3" id="dataPreviewPanel" style="display: none;">
+                    <div class="col-12">
+                        <div class="card border-success">
+                            <div class="card-header bg-success text-white">
+                                <h6 class="mb-0">
+                                    <i class="fas fa-eye me-2"></i>
+                                    计算前数据预览
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6>基本信息</h6>
+                                        <ul class="list-unstyled small">
+                                            <li><strong>计算月份：</strong><span id="previewMonth">-</span></li>
+                                            <li><strong>总奖金：</strong><span id="previewBonus">-</span> 元</li>
+                                            <li><strong>参与医生：</strong><span id="previewDoctorCount">-</span> 人</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6>数据汇总</h6>
+                                        <ul class="list-unstyled small">
+                                            <li><strong>总出勤天数：</strong><span id="previewTotalAttendance">-</span> 天</li>
+                                            <li><strong>总出院人数：</strong><span id="previewTotalDischarge">-</span> 人</li>
+                                            <li><strong>总床日数：</strong><span id="previewTotalBedDays">-</span> 天</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="text-center mt-2">
+                                    <button class="btn btn-outline-secondary btn-sm" id="hidePreviewBtn">
+                                        <i class="fas fa-eye-slash me-1"></i>
+                                        隐藏预览
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="row mt-3">
+                    <div class="col-12 text-center">
+                        <button class="btn btn-outline-info btn-lg me-2" id="previewDataBtn">
+                            <i class="fas fa-eye me-2"></i>
+                            预览数据
+                        </button>
+                        <button class="btn btn-primary btn-lg" id="calculateBtn">
+                            <i class="fas fa-calculator me-2"></i>
+                            计算绩效分配
+                        </button>
+                        <button class="btn btn-secondary btn-lg ms-2" id="saveDataBtn">
+                            <i class="fas fa-save me-2"></i>
+                            保存数据
+                        </button>
+                        <button class="btn btn-info btn-lg ms-2" id="loadHistoryBtn">
+                            <i class="fas fa-history me-2"></i>
+                            加载历史
+                        </button>
+                        <button type="button" class="btn btn-warning btn-lg ms-2" id="diagnosticBtn">
+                            <i class="fas fa-stethoscope me-2"></i>
+                            系统诊断
+                        </button>
+                        <button type="button" class="btn btn-danger btn-lg ms-2" id="cleanupInvalidBtn">
+                            <i class="fas fa-trash-alt me-2"></i>
+                            清理无效数据
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 消息提示区域 -->
+        <div id="messageArea"></div>
+    </div>
+
+    <!-- 添加/编辑医生模态框 -->
+    <div class="modal fade" id="doctorModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="doctorModalTitle">添加医生</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="doctorForm">
+                        <input type="hidden" id="doctorId" name="doctorId">
+                        <div class="mb-3">
+                            <label for="doctorName" class="form-label">姓名 *</label>
+                            <input type="text" class="form-control" id="doctorName" name="doctorName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="doctorTitle" class="form-label">职称 *</label>
+                            <select class="form-select" id="doctorTitle" name="doctorTitle" required>
+                                <option value="">请选择职称</option>
+                                <option value="住院医师">住院医师</option>
+                                <option value="主治医师">主治医师</option>
+                                <option value="副主任医师">副主任医师</option>
+                                <option value="主任医师">主任医师</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="titleCoefficient" class="form-label">职称系数 *</label>
+                            <input type="number" class="form-control" id="titleCoefficient" name="titleCoefficient" step="0.01" min="0.1" max="5.0" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-danger" id="deleteDoctorBtn" style="display: none;">
+                        <i class="fas fa-trash me-1"></i>删除
+                    </button>
+                    <button type="button" class="btn btn-primary" id="saveDoctorBtn">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 系统诊断模态框 -->
+    <div class="modal fade" id="diagnosticModal" tabindex="-1">
+        <div class="modal-dialog modal-xl">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title">
+                        <i class="fas fa-stethoscope me-2"></i>
+                        系统诊断工具
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="text-primary">数据完整性检查</h6>
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <span class="badge bg-secondary me-2" id="diagDoctorsStatus">检查中</span>
+                                        <span>医生信息</span>
+                                        <small class="text-muted ms-auto" id="diagDoctorsCount">-</small>
+                                    </div>
+                                    <div class="d-flex align-items-center mb-2">
+                                        <span class="badge bg-secondary me-2" id="diagMonthStatus">检查中</span>
+                                        <span>选择月份</span>
+                                        <small class="text-muted ms-auto" id="diagMonthValue">-</small>
+                                    </div>
+                                    <div class="d-flex align-items-center mb-2">
+                                        <span class="badge bg-secondary me-2" id="diagBonusStatus">检查中</span>
+                                        <span>总奖金设置</span>
+                                        <small class="text-muted ms-auto" id="diagBonusValue">-</small>
+                                    </div>
+                                    <div class="d-flex align-items-center mb-2">
+                                        <span class="badge bg-secondary me-2" id="diagWorkDataStatus">检查中</span>
+                                        <span>工作数据</span>
+                                        <small class="text-muted ms-auto" id="diagWorkDataCount">-</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6 class="text-primary">系统环境检查</h6>
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-2">
+                                        <span class="badge bg-secondary me-2" id="diagBrowserStatus">检查中</span>
+                                        <span>浏览器兼容性</span>
+                                        <small class="text-muted ms-auto" id="diagBrowserInfo">-</small>
+                                    </div>
+                                    <div class="d-flex align-items-center mb-2">
+                                        <span class="badge bg-secondary me-2" id="diagStorageStatus">检查中</span>
+                                        <span>本地存储</span>
+                                        <small class="text-muted ms-auto" id="diagStorageInfo">-</small>
+                                    </div>
+                                    <div class="d-flex align-items-center mb-2">
+                                        <span class="badge bg-secondary me-2" id="diagJsStatus">检查中</span>
+                                        <span>JavaScript 功能</span>
+                                        <small class="text-muted ms-auto" id="diagJsInfo">-</small>
+                                    </div>
+                                    <div class="d-flex align-items-center mb-2">
+                                        <span class="badge bg-secondary me-2" id="diagCalculatorStatus">检查中</span>
+                                        <span>计算器模块</span>
+                                        <small class="text-muted ms-auto" id="diagCalculatorInfo">-</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <h6 class="text-primary">诊断结果</h6>
+                            <div id="diagResults" class="alert alert-info">
+                                <div class="d-flex align-items-center">
+                                    <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                                    <span>正在运行系统诊断...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-3">
+                        <div class="col-12">
+                            <h6 class="text-primary">修复建议</h6>
+                            <div id="diagSuggestions" class="alert alert-light">
+                                <small class="text-muted">等待诊断完成...</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-warning" id="runFullDiagnosticBtn">
+                        <i class="fas fa-redo me-2"></i>
+                        重新诊断
+                    </button>
+                    <button type="button" class="btn btn-info" id="exportDiagnosticBtn">
+                        <i class="fas fa-download me-2"></i>
+                        导出报告
+                    </button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Made by 标识 -->
+    <div class="made-by-signature">
+        Made by Kangkai
+    </div>
+
+    <!-- 引入JavaScript库 -->
+    <script src="assets/bootstrap.bundle.min.js"></script>
+    
+    <!-- PocketBase JavaScript SDK -->
+    <script src="https://unpkg.com/pocketbase@0.21.1/dist/pocketbase.umd.js"></script>
+
+    <script src="js/models.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/calculator.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/pwa-install.js"></script>
+</body>
+</html>
