@@ -1,0 +1,11 @@
+﻿# Node
+node_modules
+*.log
+/dist
+
+# PocketBase 运行时数据（不要提交）
+/pb_data
+/pb_public
+
+# 环境变量文件
+.env

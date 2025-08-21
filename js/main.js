@@ -94,7 +94,7 @@ class MainPageController {
             bonusInput.value = savedBonus;
         } else {
             // 设置默认总奖金
-            const defaultBonus = 50000;
+            const defaultBonus = 10000;
             this.totalBonus = defaultBonus;
             bonusInput.value = defaultBonus;
             localStorage.setItem('performance_system_total_bonus', defaultBonus.toString());
@@ -346,6 +346,9 @@ class MainPageController {
             this.renderCombinedTable();
             this.updateDataSummary();
             
+            // 更新数据预览
+            this.previewData();
+            
             this.showMessage('医生信息保存成功', 'success');
             
         } catch (error) {
@@ -474,6 +477,9 @@ class MainPageController {
             // 更新数据汇总
             this.updateDataSummary();
             
+            // 更新数据预览
+            this.previewData();
+            
         } catch (error) {
             console.error('更新工作数据失败:', error);
             this.showMessage('更新数据失败：' + error.message, 'danger');
@@ -521,6 +527,9 @@ class MainPageController {
             // 重新渲染
             this.renderCombinedTable();
             this.updateDataSummary();
+            
+            // 更新数据预览
+            this.previewData();
             
             this.showMessage('医生信息删除成功', 'success');
             
@@ -768,7 +777,7 @@ class MainPageController {
         if (validDoctors.length === 0) {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td colspan="9" class="text-center text-muted py-4">
+                <td colspan="10" class="text-center text-muted py-4">
                     <i class="fas fa-user-plus fa-2x mb-2"></i><br>
                     暂无医生信息，请点击"添加医生"按钮添加
                 </td>
@@ -802,6 +811,13 @@ class MainPageController {
                            value="${workData.dischargeCount || ''}" 
                            min="0" placeholder=""
                            onchange="mainController.updateWorkData('${doctor.id}', 'dischargeCount', this.value)">
+                </td>
+                <td>
+                    <input type="number" class="form-control form-control-sm" 
+                           data-field="medicalRevenue" data-doctor-id="${doctor.id}" 
+                           value="${workData.medicalRevenue || ''}" 
+                           min="0" step="0.01" placeholder=""
+                           onchange="mainController.updateWorkData('${doctor.id}', 'medicalRevenue', this.value)">
                 </td>
                 <td>
                     <input type="number" class="form-control form-control-sm" 
@@ -984,8 +1000,53 @@ class MainPageController {
      * 预览数据
      */
     previewData() {
-        // 实现数据预览功能
-        console.log('预览数据功能');
+        // 更新基本信息
+        const previewMonth = document.getElementById('previewMonth');
+        const previewBonus = document.getElementById('previewBonus');
+        const previewDoctorCount = document.getElementById('previewDoctorCount');
+        
+        if (previewMonth) previewMonth.textContent = this.currentMonth || '-';
+        if (previewBonus) previewBonus.textContent = this.totalBonus > 0 ? this.totalBonus : '-';
+        
+        // 过滤有效医生
+        const validDoctors = this.doctors.filter(doctor => {
+            return doctor && doctor.name && typeof doctor.name === 'string' && doctor.name.trim() !== '';
+        });
+        if (previewDoctorCount) previewDoctorCount.textContent = validDoctors.length;
+        
+        // 计算数据汇总
+        let totalAttendance = 0;
+        let totalDischarge = 0;
+        let totalBedDays = 0;
+        let totalMedicalRevenue = 0;
+        
+        validDoctors.forEach(doctor => {
+            const workData = this.workData[doctor.id];
+            if (workData) {
+                totalAttendance += parseInt(workData.attendanceDays) || 0;
+                totalDischarge += parseInt(workData.dischargeCount) || 0;
+                totalBedDays += parseInt(workData.bedDays) || 0;
+                totalMedicalRevenue += parseFloat(workData.medicalRevenue) || 0;
+            }
+        });
+        
+        // 更新数据汇总显示
+        const previewTotalAttendance = document.getElementById('previewTotalAttendance');
+        const previewTotalDischarge = document.getElementById('previewTotalDischarge');
+        const previewTotalBedDays = document.getElementById('previewTotalBedDays');
+        const previewTotalMedicalRevenue = document.getElementById('previewTotalMedicalRevenue');
+        
+        if (previewTotalAttendance) previewTotalAttendance.textContent = totalAttendance;
+        if (previewTotalDischarge) previewTotalDischarge.textContent = totalDischarge;
+        if (previewTotalBedDays) previewTotalBedDays.textContent = totalBedDays;
+        if (previewTotalMedicalRevenue) previewTotalMedicalRevenue.textContent = totalMedicalRevenue.toFixed(2);
+        
+        console.log('数据预览已更新:', {
+            totalAttendance,
+            totalDischarge,
+            totalBedDays,
+            totalMedicalRevenue
+        });
     }
 
     /**
